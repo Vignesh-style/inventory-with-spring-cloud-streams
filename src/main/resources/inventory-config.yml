@@ -1,0 +1,54 @@
+inventory:
+  dataBuildersList:
+  - name: TLInventoryBuilder
+    builderBeanName: TLInventoryDataBuilder
+    persisterBeanName: TLInventoryDataPersister
+    channelName: RCA_TL_PERSISTER_RESULT_CHANNEL
+    isInventoryBuildingEnabled: true
+    dataBuilderThreadPoolSize: 50
+
+    reconcilers:
+      - BeanName: TLInventoryDataReconciler
+        isReconEnabled: true
+        retriggerFailedObjects: true
+
+    listeners:
+      - BeanName: MOEventsListener
+
+    objectTypeSequence:
+      - type: TopologicalLink
+        batchSize: 10000
+
+    customInput:
+      moListenerConsumerId: RcaTLDataBuilderListener
+
+  - name: RCAL3VPNVRFEndDataBuilder
+    builderBeanName: L3VPNInventoryDataBuilder
+    persisterBeanName: L3VPNInventoryDataPersister
+    channelName: RCA_L3VPNVRF_END_PERSISTER_RESULT_CHANNEL
+    isInventoryBuildingEnabled: true
+    dataBuilderThreadPoolSize: 50
+
+    builderQueueData:
+      maxQueueCapacity: 100
+      isPersistent: true
+      channelName: RCA_L3VPNVRF_END_INVENTORY_BUILDER_CHANNEL
+      consumerId: RcaL3VPNVRFEndInventoryBuilderConsumer
+
+    persisterQueueData:
+      maxQueueCapacity: 10
+
+    reconcilers:
+      - BeanName: L3VPNInventoryDataReconciler
+        isReconEnabled: true
+        retriggerFailedObjects: true
+
+    listeners:
+      - BeanName: L3VPNInventoryChangeEventListener
+
+    objectTypeSequence:
+      - type: L3VPNVRFEnd
+        batchSize: 10000
+
+    customInput:
+      moListenerConsumerId: RcaL3VPNVRFEndDataBuilderListener
